@@ -1,0 +1,369 @@
+/* NyouOS 工具应用样式
+ * 剪贴板、密码生成器、QR生成器、单位转换器、颜色选择器、主题编辑器、屏幕录制、开发者工具
+ * 闭源 © 2025-2026 KevinAnanda. All rights reserved.
+ */
+
+/* ===== 通用工具应用样式 ===== */
+.password-gen, .qr-generator, .unit-converter, .color-picker,
+.theme-editor, .screen-recorder, .developer-tools, .clipboard-app {
+    padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--text-primary, #333);
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.password-gen h2, .qr-generator h2, .unit-converter h2,
+.color-picker h2, .theme-editor h2, .screen-recorder h2,
+.developer-tools h2 {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* ===== 密码生成器 ===== */
+.pwd-result {
+    background: var(--bg-secondary, #f5f5f5);
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 16px;
+    word-break: break-all;
+    min-height: 24px;
+    margin-bottom: 16px;
+    user-select: all;
+}
+
+.pwd-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.pwd-controls label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.pwd-controls input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.pwd-length {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+}
+
+.pwd-length input[type="range"] {
+    flex: 1;
+    cursor: pointer;
+}
+
+.pwd-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.pwd-buttons .nyou-btn {
+    flex: 1;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.pwd-buttons .nyou-btn:hover {
+    opacity: 0.85;
+}
+
+.pwd-buttons .nyou-btn:first-child {
+    background: var(--accent-color, #0078d4);
+    color: white;
+}
+
+.pwd-buttons .nyou-btn-secondary {
+    background: var(--bg-secondary, #e5e5e5);
+    color: var(--text-primary, #333);
+}
+
+/* ===== 剪贴板历史 ===== */
+.clipboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.clipboard-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.clipboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.clipboard-empty {
+    text-align: center;
+    color: var(--text-secondary, #888);
+    padding: 40px 20px;
+    font-size: 14px;
+}
+
+.clipboard-empty small {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.clipboard-item {
+    background: var(--bg-secondary, #f5f5f5);
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.clipboard-item:hover {
+    background: var(--bg-hover, #e8e8e8);
+    border-color: var(--accent-color, #0078d4);
+}
+
+.clipboard-text {
+    font-size: 13px;
+    line-height: 1.4;
+    word-break: break-all;
+    margin-bottom: 6px;
+    color: var(--text-primary, #333);
+}
+
+.clipboard-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clipboard-time {
+    font-size: 11px;
+    color: var(--text-secondary, #999);
+}
+
+.clipboard-delete {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--text-secondary, #999);
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.clipboard-delete:hover {
+    color: #e74c3c;
+}
+
+/* ===== QR 生成器 ===== */
+.qr-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.qr-display {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    min-height: 200px;
+    align-items: center;
+}
+
+.qr-display canvas, .qr-display img {
+    max-width: 100%;
+}
+
+.qr-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.qr-actions button {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    background: var(--accent-color, #0078d4);
+    color: white;
+}
+
+/* ===== 单位转换器 ===== */
+.converter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.converter-row input, .converter-row select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.converter-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.converter-tab {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 16px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.converter-tab.active {
+    background: var(--accent-color, #0078d4);
+    color: white;
+    border-color: var(--accent-color, #0078d4);
+}
+
+/* ===== 颜色选择器 ===== */
+.color-picker-preview {
+    width: 100%;
+    height: 80px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color, #ddd);
+}
+
+.color-picker-values {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.color-picker-values label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.color-picker-values input {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+/* ===== 屏幕录制 ===== */
+.recorder-status {
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    color: var(--text-secondary, #888);
+}
+
+.recorder-preview {
+    width: 100%;
+    background: #000;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    min-height: 150px;
+}
+
+.recorder-controls {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.recorder-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.recorder-btn.start { background: #e74c3c; color: white; }
+.recorder-btn.stop { background: #95a5a6; color: white; }
+.recorder-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ===== 开发者工具 ===== */
+.dev-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+.dev-tab {
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.dev-tab.active {
+    border-bottom-color: var(--accent-color, #0078d4);
+    color: var(--accent-color, #0078d4);
+}
+
+.dev-console {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: 'Consolas', monospace;
+    font-size: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 8px;
+}
+
+.dev-console-line {
+    padding: 2px 0;
+    word-break: break-all;
+}
+
+.dev-console-line.error { color: #f44747; }
+.dev-console-line.warn { color: #ce9178; }
+.dev-console-line.info { color: #569cd6; }

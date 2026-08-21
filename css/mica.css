@@ -1,0 +1,184 @@
+﻿/*
+ * Mica window material
+ *
+ * Mica is a wallpaper-derived, opaque base layer. It must not sample live
+ * application content like Acrylic/Gaussian glass does. The wallpaper layer
+ * below is therefore rendered independently and only refreshed when the
+ * desktop wallpaper changes (see State.applyMaterialSetting).
+ */
+
+.window-mica-backdrop {
+    display: none;
+}
+
+body.Nyou-v2.material-mica {
+    --mica-fallback: #f3f3f3;
+    --mica-tint: rgba(243, 246, 250, 0.84);
+    --mica-luminosity:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.08) 58%, rgba(225, 232, 242, 0.16));
+    --mica-layer-fill: rgba(255, 255, 255, 0.56);
+    --mica-layer-fill-hover: rgba(255, 255, 255, 0.68);
+    --mica-layer-border: rgba(0, 0, 0, 0.075);
+}
+
+body.Nyou-v2.dark-mode.material-mica {
+    --mica-fallback: #202020;
+    --mica-tint: rgba(28, 30, 35, 0.86);
+    --mica-luminosity:
+        linear-gradient(135deg, rgba(64, 69, 80, 0.24), rgba(17, 18, 22, 0.18) 58%, rgba(0, 0, 0, 0.22));
+    --mica-layer-fill: rgba(255, 255, 255, 0.075);
+    --mica-layer-fill-hover: rgba(255, 255, 255, 0.115);
+    --mica-layer-border: rgba(255, 255, 255, 0.09);
+}
+
+/* The host stays opaque. Only the dedicated wallpaper snapshot layer is tinted. */
+body.Nyou-v2.material-mica:not(.blur-disabled) .window,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window.fw-host {
+    isolation: isolate;
+    background: var(--mica-fallback) !important;
+    background-image: none !important;
+    border-color: var(--mica-layer-border) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.Nyou-v2.material-mica:not(.blur-disabled) .window-mica-backdrop {
+    display: block;
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background-color: var(--mica-fallback);
+    opacity: 1;
+    will-change: opacity;
+    transition: opacity 150ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/*
+ * A viewport-sized wallpaper canvas is translated behind each window. Its
+ * crop is synchronized from WindowManager, so dragging/resizing reveals the
+ * same blurred wallpaper coordinates as the desktop underneath.
+ */
+body.Nyou-v2.material-mica:not(.blur-disabled) .window-mica-backdrop::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * var(--mica-window-x, 0px));
+    top: calc(-1 * var(--mica-window-y, 0px));
+    width: 100vw;
+    height: 100vh;
+    background-image: var(--Nyou-wallpaper-url, none);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    filter: blur(52px) saturate(0.92);
+    transform: scale(1.08);
+    transform-origin: center;
+    opacity: 1;
+}
+
+body.Nyou-v2.material-mica:not(.blur-disabled) .window-mica-backdrop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--mica-tint);
+    background-image: var(--mica-luminosity);
+}
+
+body.Nyou-v2.material-mica:not(.blur-disabled) .window-titlebar,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window-content,
+body.Nyou-v2.material-mica:not(.blur-disabled) .fw-frame,
+body.Nyou-v2.material-mica:not(.blur-disabled) .settings-app,
+body.Nyou-v2.material-mica:not(.blur-disabled) .settings-content {
+    background: transparent !important;
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* WinUI's second layer: subtle neutral fills, never another backdrop sample. */
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .fw-card,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .Nyou-card,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .Nyou-setting-item,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-accent-panel,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-static-card,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-recommend-item,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-recent-item,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .network-hero-card,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .network-option-item,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .network-expand-panel,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .app-list-item {
+    background: var(--mica-layer-fill) !important;
+    background-image: none !important;
+    border-color: var(--mica-layer-border) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .Nyou-setting-item:hover,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-recommend-item:hover,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-recent-item:hover,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .network-option-item:hover,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .app-list-item:hover {
+    background: var(--mica-layer-fill-hover) !important;
+}
+
+/*
+ * Scrolling changes which card is geometrically under a stationary pointer.
+ * Keep its Mica fill stable until NyouWindow releases the hover lock, so a
+ * newly crossed card cannot flash its :hover color for a single frame.
+ */
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-content.Nyou-scroll-hover-locked .Nyou-setting-item:hover,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-content.Nyou-scroll-hover-locked .settings-recommend-item:hover,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-content.Nyou-scroll-hover-locked .settings-recent-item:hover,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-content.Nyou-scroll-hover-locked .network-option-item:hover,
+body.Nyou-v2.material-mica:not(.blur-disabled) .window .settings-content.Nyou-scroll-hover-locked .app-list-item:hover {
+    background: var(--mica-layer-fill) !important;
+    background-image: none !important;
+}
+
+/*
+ * Mica communicates focus by cross-fading the complete wallpaper material to
+ * the opaque host fallback. Keeping both layers intact makes the transition
+ * reversible and avoids a one-frame gradient/background swap.
+ */
+body.Nyou-v2.material-mica:not(.blur-disabled) .window.window-inactive .window-mica-backdrop {
+    opacity: 0;
+}
+
+/* Transparency/high-contrast fallback: a readable opaque system color. */
+body.Nyou-v2.material-mica.blur-disabled .window-mica-backdrop {
+    display: none;
+}
+
+body.Nyou-v2.material-mica.blur-disabled .window,
+body.Nyou-v2.material-mica.blur-disabled .window.fw-host {
+    background: var(--mica-fallback) !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+@media (forced-colors: active), (prefers-contrast: more) {
+    body.Nyou-v2.material-mica .window-mica-backdrop {
+        display: none !important;
+    }
+
+    body.Nyou-v2.material-mica .window,
+    body.Nyou-v2.material-mica .window.fw-host {
+        color: CanvasText !important;
+        background: Canvas !important;
+        border-color: CanvasText !important;
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    body.Nyou-v2.material-mica .window-mica-backdrop {
+        display: none;
+    }
+
+    body.Nyou-v2.material-mica .window,
+    body.Nyou-v2.material-mica .window.fw-host {
+        background: var(--mica-fallback) !important;
+    }
+}

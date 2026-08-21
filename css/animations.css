@@ -1,0 +1,420 @@
+/* 动画定义 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleOut {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-8px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(8px);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============ Drag-drop file hint (animated border) ============ */
+@keyframes fileDragDash {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -64; }
+}
+
+@keyframes fileDragGlow {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* 应用动画类 */
+body.animations-enabled .boot-loading-ring {
+    animation: boot-ring-spin 1.2s linear infinite;
+}
+
+/* Boot is already visible in the initial HTML paint. Replaying fadeIn after
+   State adds animations-enabled exposes the light body background as a flash. */
+body.animations-enabled #boot-screen {
+    animation: none;
+}
+
+body.animations-enabled #lock-screen.show {
+    animation: fadeIn 0.3s ease-out;
+}
+
+body.animations-enabled #login-screen.show {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* 登录卡片动画移至 main.css */
+
+body.animations-enabled .login-pin-input.error {
+    animation: shake 0.4s ease-out;
+}
+
+body.animations-enabled .start-menu {
+    animation: scaleIn 0.2s ease-out;
+}
+
+body.animations-enabled .power-menu {
+    animation: scaleIn 0.15s ease-out;
+}
+
+body.animations-enabled .control-center {
+    animation: slideUp 0.25s ease-out;
+}
+
+body.animations-enabled .notification-center.show {
+    animation: slideInRight 0.3s ease-out;
+}
+
+body.animations-enabled .notification-center.hide {
+    animation: slideOutRight 0.3s ease-out;
+}
+
+body.animations-enabled .context-menu {
+    animation: scaleIn 0.15s ease-out;
+}
+
+body.animations-enabled .window.opening {
+    animation: scaleIn 0.2s ease-out;
+}
+
+body.animations-enabled .window.closing {
+    animation: scaleOut 0.2s ease-out;
+}
+
+body.animations-enabled .desktop-icon {
+    transition: all var(--transition-fast);
+}
+
+body.animations-enabled .taskbar-btn {
+    transition: all var(--transition-fast);
+}
+
+body.animations-enabled .control-tile {
+    transition: all var(--transition-fast);
+}
+
+body.animations-enabled .start-app {
+    transition: all var(--transition-fast);
+}
+
+/* 禁用动画时移除所有过渡 */
+body.animations-disabled * {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* 加载动画 */
+body.animations-enabled .lock-hint {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* ============ 任务栏应用图标动画 ============ */
+@keyframes taskbarAppEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.3) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+body.animations-enabled .taskbar-app-entering {
+    animation: taskbarAppEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes taskbarAppExit {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.3) translateY(20px);
+    }
+}
+
+body.animations-enabled .taskbar-app-exiting {
+    animation: taskbarAppExit 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes taskbarAppDockHit {
+    0% {
+        transform: scale(1);
+    }
+    38% {
+        transform: scale(0.78);
+    }
+    72% {
+        transform: scale(1.06);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+body.animations-enabled .taskbar-app-dock-hit {
+    animation: taskbarAppDockHit 0.28s cubic-bezier(0.2, 0.9, 0.28, 1);
+}
+
+/* ============ 开始菜单动画 ============ */
+@keyframes startMenuOpen {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+}
+
+@keyframes startMenuClose {
+    from {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, 20px) scale(0.95);
+    }
+}
+
+body.animations-enabled .start-menu:not(.hidden) {
+    animation: startMenuOpen 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+body.animations-enabled .start-menu.closing {
+    animation: startMenuClose 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* ============ 控制中心动画 ============ */
+@keyframes controlCenterOpen {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes controlCenterClose {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+}
+
+body.animations-enabled .control-center:not(.hidden) {
+    animation: controlCenterOpen 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+body.animations-enabled .control-center.closing {
+    animation: controlCenterClose 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* ============ 窗口动画 ============ */
+@keyframes windowOpen {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes windowClose {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+@keyframes windowMaximize {
+    from {
+        border-radius: var(--radius-xl);
+    }
+    to {
+        border-radius: 0;
+    }
+}
+@keyframes windowRestore {
+    from {
+        border-radius: 0;
+    }
+    to {
+        border-radius: var(--radius-xl);
+    }
+}
+
+@keyframes windowFocusEnter {
+    from { filter: saturate(0.78); transform: scale(0.988); }
+    to { filter: saturate(1); transform: scale(1); }
+}
+
+@keyframes windowFocusLeave {
+    from { filter: saturate(1); transform: scale(1); }
+    to { filter: saturate(0.78); transform: scale(0.988); }
+}
+
+/* 窗口打开动画 */
+body.animations-enabled .window.opening {
+    animation: windowOpen 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+body.animations-enabled .window.window-focus-enter {
+    animation: windowFocusEnter 180ms cubic-bezier(0.2, 0, 0, 1) both;
+    transform-origin: center center;
+}
+
+body.animations-enabled .window.window-focus-leave {
+    animation: windowFocusLeave 180ms cubic-bezier(0.4, 0, 1, 1) both;
+    transform-origin: center center;
+}
+
+body.animations-enabled .window.window-inactive:not(.minimizing):not(.restoring):not(.closing) {
+    transform: scale(0.988);
+    transform-origin: center center;
+}
+
+/* 窗口关闭动画 */
+body.animations-enabled .window.closing {
+    animation: windowClose 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* 窗口几何过渡统一使用无超调曲线，避免快速弹性回摆。 */
+body.animations-enabled .window.maximizing {
+    transition: all 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 窗口从最大化还原动画 */
+body.animations-enabled .window.unmaximizing {
+    transition: all 0.44s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 窗口恢复动画 - 从任务栏平滑还原 */
+body.animations-enabled .window.restoring {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.3s ease-out;
+}
+
+/* 窗口最小化动画 - 缩小到任务栏 */
+body.animations-enabled .window.minimizing {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease-in;
+}
+
+/* 禁用动画时的窗口 */
+body.animations-disabled .window {
+    transition: none !important;
+    animation: none !important;
+}

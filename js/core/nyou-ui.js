@@ -1,0 +1,1150 @@
+﻿/**
+ * Nyou UI 组件库
+ * 统一的系统级 UI 组件，供所有应用调用
+ * 
+ * 组件列表：
+ * - NyouUI.Button / IconButton  按钮
+ * - NyouUI.TabBar              标签栏
+ * - NyouUI.NavigationBar       导航栏
+ * - NyouUI.ToolBar             工具栏
+ * - NyouUI.Breadcrumb          面包屑导航
+ * - NyouUI.SegmentedControl    分段控制
+ * - NyouUI.Input / SearchBox   输入框
+ * - NyouUI.Select              下拉选择
+ * - NyouUI.Toggle              开关
+ * - NyouUI.Slider              滑块
+ * - NyouUI.ContextMenu         右键菜单
+ * - NyouUI.Modal               模态对话框
+ * - NyouUI.Card                卡片
+ * - NyouUI.List                列表
+ * - NyouUI.Progress            进度条
+ * - NyouUI.Dialog              警告框/对话框 (提示/警告/错误)
+ * - NyouUI.InputDialog         输入对话框 (支持文本/密码输入)
+ * - NyouUI.Toast               通知 (右下角弹出)
+ */
+
+const NyouUI = {
+    version: '1.0.0',
+    
+    // ============ 工具函数 ============
+    _utils: {
+        generateId: (prefix = 'Nyou') => `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        classNames: (...classes) => classes.filter(Boolean).join(' '),
+        getIconPath: (name, type = 'stroke') => `Theme/Icon/Symbol_icon/${type}/${name}.svg`,
+        createElement(tag, opts = {}) {
+            const el = document.createElement(tag);
+            if (opts.className) el.className = opts.className;
+            if (opts.id) el.id = opts.id;
+            if (opts.html) el.innerHTML = opts.html;
+            if (opts.text) el.textContent = opts.text;
+            if (opts.attrs) Object.entries(opts.attrs).forEach(([k, v]) => v !== null && el.setAttribute(k, v));
+            if (opts.data) Object.entries(opts.data).forEach(([k, v]) => el.dataset[k] = v);
+            if (opts.styles) Object.assign(el.style, opts.styles);
+            return el;
+        }
+    },
+
+    // ============ 按钮 ============
+    Button(opts = {}) {
+        const { text = '', variant = 'secondary', size = 'medium', icon = null, iconPosition = 'left',
+                disabled = false, loading = false, onClick = null, id = null, className = '' } = opts;
+        const btn = this._utils.createElement('button', {
+            className: this._utils.classNames('nyou-btn', `nyou-btn-${variant}`, `nyou-btn-${size}`, loading && 'nyou-btn-loading', className),
+            id,
+            attrs: { type: 'button' }
+        });
+        btn.disabled = disabled || loading;
+        let html = loading ? '<span class="nyou-btn-spinner"></span>' : '';
+        if (icon && iconPosition === 'left' && !loading) html += `<img src="${this._utils.getIconPath(icon)}" class="nyou-btn-icon" alt="">`;
+        if (text) html += `<span class="nyou-btn-text">${text}</span>`;
+        if (icon && iconPosition === 'right' && !loading) html += `<img src="${this._utils.getIconPath(icon)}" class="nyou-btn-icon" alt="">`;
+        btn.innerHTML = html;
+        if (onClick) btn.addEventListener('click', onClick);
+        return btn;
+    },
+
+    IconButton(opts = {}) {
+        const { icon, title = '', size = 'medium', disabled = false, onClick = null, id = null, className = '' } = opts;
+        const btn = this._utils.createElement('button', {
+            className: this._utils.classNames('nyou-icon-btn', `nyou-icon-btn-${size}`, className),
+            id, attrs: { title, type: 'button' }
+        });
+        btn.disabled = disabled;
+        btn.innerHTML = `<img src="${this._utils.getIconPath(icon)}" alt="${title}">`;
+        if (onClick) btn.addEventListener('click', onClick);
+        return btn;
+    },
+
+    // ============ 标签栏 ============
+    TabBar(opts = {}) {
+        const { tabs = [], activeTab = null, onTabChange = null, onTabClose = null,
+                showAddButton = false, onAddTab = null, variant = 'default', id = null, className = '' } = opts;
+        const container = this._utils.createElement('div', {
+            className: this._utils.classNames('Nyou-tabbar', `Nyou-tabbar-${variant}`, className), id
+        });
+        const tabsWrapper = this._utils.createElement('div', { className: 'Nyou-tabbar-tabs' });
+        
+        tabs.forEach(tab => {
+            const tabEl = this._utils.createElement('div', {
+                className: this._utils.classNames('Nyou-tab', tab.id === activeTab && 'active'),
+                data: { tabId: tab.id }
+            });
+            let content = tab.icon ? `<img src="${this._utils.getIconPath(tab.icon)}" class="Nyou-tab-icon" alt="">` : '';
+            content += `<span class="Nyou-tab-label">${tab.label}</span>`;
+            if (tab.closable !== false) content += `<button type="button" class="Nyou-tab-close" data-tab-id="${tab.id}"><img src="${this._utils.getIconPath('Cancel')}" alt="关闭"></button>`;
+            tabEl.innerHTML = content;
+            tabEl.addEventListener('click', e => { if (!e.target.closest('.Nyou-tab-close') && onTabChange) onTabChange(tab.id); });
+            const closeBtn = tabEl.querySelector('.Nyou-tab-close');
+            if (closeBtn && onTabClose) closeBtn.addEventListener('click', e => { e.stopPropagation(); onTabClose(tab.id); });
+            tabsWrapper.appendChild(tabEl);
+        });
+        container.appendChild(tabsWrapper);
+        if (showAddButton) container.appendChild(this.IconButton({ icon: 'Plus Circle', title: '新建标签页', size: 'small', className: 'Nyou-tabbar-add', onClick: onAddTab }));
+        return container;
+    },
+
+    // ============ 导航栏 ============
+    NavigationBar(opts = {}) {
+        const { showBack = true, showForward = true, onBack = null, onForward = null, backDisabled = false, forwardDisabled = false, center = null, right = null, id = null, className = '' } = opts;
+        const navbar = this._utils.createElement('div', { className: this._utils.classNames('Nyou-navbar', className), id });
+        const left = this._utils.createElement('div', { className: 'Nyou-navbar-left' });
+        if (showBack) left.appendChild(this.IconButton({ icon: 'Arrow Left', title: '后退', disabled: backDisabled, onClick: onBack }));
+        if (showForward) left.appendChild(this.IconButton({ icon: 'Arrow Right', title: '前进', disabled: forwardDisabled, onClick: onForward }));
+        navbar.appendChild(left);
+        
+        const centerEl = this._utils.createElement('div', { className: 'Nyou-navbar-center' });
+        if (center) typeof center === 'string' ? centerEl.innerHTML = center : centerEl.appendChild(center);
+        navbar.appendChild(centerEl);
+        
+        const rightEl = this._utils.createElement('div', { className: 'Nyou-navbar-right' });
+        if (right) typeof right === 'string' ? rightEl.innerHTML = right : rightEl.appendChild(right);
+        navbar.appendChild(rightEl);
+        return navbar;
+    },
+
+    // ============ 工具栏 ============
+    ToolBar(opts = {}) {
+        const { items = [], onItemClick = null, align = 'left', id = null, className = '' } = opts;
+        const toolbar = this._utils.createElement('div', { className: this._utils.classNames('Nyou-toolbar', `Nyou-toolbar-${align}`, className), id });
+        items.forEach(item => {
+            if (item.divider) { toolbar.appendChild(this._utils.createElement('div', { className: 'Nyou-toolbar-divider' })); return; }
+            const btn = this.IconButton({ icon: item.icon, title: item.title || item.label || '', disabled: item.disabled, onClick: () => onItemClick && onItemClick(item.id, item) });
+            btn.dataset.toolId = item.id;
+            if (item.label) { btn.innerHTML += `<span class="Nyou-toolbar-label">${item.label}</span>`; btn.classList.add('Nyou-toolbar-btn-labeled'); }
+            toolbar.appendChild(btn);
+        });
+        return toolbar;
+    },
+
+    // ============ 面包屑 ============
+    Breadcrumb(opts = {}) {
+        const { items = [], onItemClick = null, separator = '›', id = null, className = '' } = opts;
+        const bc = this._utils.createElement('div', { className: this._utils.classNames('Nyou-breadcrumb', className), id });
+        items.forEach((item, i) => {
+            if (i > 0) bc.appendChild(this._utils.createElement('span', { className: 'Nyou-breadcrumb-separator', text: separator }));
+            const el = this._utils.createElement('div', { className: 'Nyou-breadcrumb-item', data: { id: item.id } });
+            el.innerHTML = (item.icon ? `<img src="${this._utils.getIconPath(item.icon)}" class="Nyou-breadcrumb-icon" alt="">` : '') + `<span>${item.label}</span>`;
+            el.addEventListener('click', () => onItemClick && onItemClick(item.id, i));
+            bc.appendChild(el);
+        });
+        return bc;
+    },
+
+    // ============ 分段控制 ============
+    SegmentedControl(opts = {}) {
+        const { segments = [], activeSegment = null, onChange = null, size = 'medium', id = null, className = '' } = opts;
+        const ctrl = this._utils.createElement('div', { className: this._utils.classNames('Nyou-segmented', `Nyou-segmented-${size}`, className), id });
+        const slider = this._utils.createElement('div', { className: 'Nyou-segmented-slider' });
+        ctrl.appendChild(slider);
+        
+        segments.forEach((seg, i) => {
+            const el = this._utils.createElement('div', { className: this._utils.classNames('Nyou-segmented-item', seg.id === activeSegment && 'active'), data: { segmentId: seg.id } });
+            el.innerHTML = (seg.icon ? `<img src="${this._utils.getIconPath(seg.icon)}" class="Nyou-segmented-icon" alt="">` : '') + `<span>${seg.label}</span>`;
+            el.addEventListener('click', () => {
+                ctrl.querySelectorAll('.Nyou-segmented-item').forEach(e => e.classList.remove('active'));
+                el.classList.add('active');
+                slider.style.transform = `translateX(${i * 100}%)`;
+                slider.style.width = `${100 / segments.length}%`;
+                onChange && onChange(seg.id);
+            });
+            ctrl.appendChild(el);
+        });
+        const activeIdx = segments.findIndex(s => s.id === activeSegment);
+        if (activeIdx >= 0) { slider.style.transform = `translateX(${activeIdx * 100}%)`; slider.style.width = `${100 / segments.length}%`; }
+        return ctrl;
+    },
+
+    // ============ 输入框 ============
+    Input(opts = {}) {
+        const { type = 'text', placeholder = '', value = '', icon = null, clearable = false, disabled = false, onChange = null, onEnter = null, id = null, className = '' } = opts;
+        const wrapper = this._utils.createElement('div', { className: this._utils.classNames('Nyou-input-wrapper', icon && 'Nyou-input-with-icon', disabled && 'Nyou-input-disabled', className), id });
+        if (icon) wrapper.innerHTML = `<img src="${this._utils.getIconPath(icon)}" class="Nyou-input-icon" alt="">`;
+        const input = this._utils.createElement('input', { className: 'Nyou-input', attrs: { type, placeholder, value } });
+        input.disabled = disabled;
+        input.addEventListener('input', e => {
+            onChange && onChange(e.target.value);
+            const clearBtn = wrapper.querySelector('.Nyou-input-clear');
+            if (clearBtn) clearBtn.style.display = e.target.value ? 'flex' : 'none';
+        });
+        input.addEventListener('keydown', e => { if (e.key === 'Enter' && onEnter) onEnter(input.value); });
+        wrapper.appendChild(input);
+        if (clearable) {
+            const clearBtn = this._utils.createElement('button', { className: 'Nyou-input-clear', attrs: { type: 'button' }, html: `<img src="${this._utils.getIconPath('Cancel')}" alt="清除">`, styles: { display: value ? 'flex' : 'none' } });
+            clearBtn.addEventListener('click', () => { input.value = ''; clearBtn.style.display = 'none'; onChange && onChange(''); input.focus(); });
+            wrapper.appendChild(clearBtn);
+        }
+        wrapper.getInput = () => input; wrapper.getValue = () => input.value; wrapper.setValue = v => input.value = v; wrapper.focus = () => input.focus();
+        return wrapper;
+    },
+
+    SearchBox(opts = {}) {
+        return this.Input({ ...opts, type: 'search', icon: 'Search', clearable: true, className: this._utils.classNames('Nyou-searchbox', opts.className) });
+    },
+
+    // ============ 下拉选择 (自定义实现) ============
+    Select(opts = {}) {
+        const { options: selectOpts = [], value = '', placeholder = '请选择', disabled = false, onChange = null, id = null, className = '' } = opts;
+        const wrapper = this._utils.createElement('div', { className: this._utils.classNames('Nyou-select-wrapper', disabled && 'Nyou-select-disabled', className), id });
+        
+        // 查找当前选中的标签
+        let selectedLabel = placeholder;
+        const selectedOption = selectOpts.find(o => o.value === value);
+        if (selectedOption) selectedLabel = selectedOption.label;
+
+        // 触发器（显示当前值的部分）
+        const trigger = this._utils.createElement('div', { className: 'Nyou-select-trigger', attrs: { tabindex: '0' } });
+        trigger.innerHTML = `
+            <span class="Nyou-select-value">${selectedLabel}</span>
+            <img src="${this._utils.getIconPath('Arrow Down')}" class="Nyou-select-arrow" alt="">
+        `;
+        
+        // 下拉菜单 (将挂载到 body)
+        const dropdown = this._utils.createElement('div', { className: 'Nyou-select-dropdown' });
+        
+        // 渲染选项
+        selectOpts.forEach(opt => {
+            const optEl = this._utils.createElement('div', { 
+                className: this._utils.classNames('Nyou-select-option', opt.value === value && 'selected', opt.disabled && 'disabled'),
+                data: { value: opt.value },
+                text: opt.label
+            });
+            
+            optEl.addEventListener('click', (e) => {
+                if (opt.disabled) return;
+                e.stopPropagation();
+                
+                // 更新值
+                trigger.querySelector('.Nyou-select-value').textContent = opt.label;
+                dropdown.querySelectorAll('.Nyou-select-option').forEach(el => el.classList.remove('selected'));
+                optEl.classList.add('selected');
+                
+                // 关闭菜单
+                closeDropdown();
+                
+                // 触发回调
+                if (currValue !== opt.value) {
+                    currValue = opt.value;
+                    onChange && onChange(currValue);
+                }
+            });
+            
+            dropdown.appendChild(optEl);
+        });
+
+        let currValue = value;
+        let isOpen = false;
+
+        const positionDropdown = () => {
+            const rect = trigger.getBoundingClientRect();
+            dropdown.style.position = 'fixed';
+            dropdown.style.top = `${rect.bottom + 4}px`;
+            dropdown.style.left = `${rect.left}px`;
+            dropdown.style.width = `${rect.width}px`;
+        };
+
+        const openDropdown = () => {
+            if (disabled || isOpen) return;
+            const closeEvent = typeof CustomEvent === 'function'
+                ? new CustomEvent('Nyou-select-close-all', { detail: { source: wrapper } })
+                : (() => {
+                    const event = document.createEvent('CustomEvent');
+                    event.initCustomEvent('Nyou-select-close-all', false, false, { source: wrapper });
+                    return event;
+                })();
+            document.dispatchEvent(closeEvent);
+
+            isOpen = true;
+            wrapper.classList.add('active');
+            
+            // 将 dropdown 挂载到 body
+            if (!dropdown.parentElement || dropdown.parentElement !== document.body) {
+                document.body.appendChild(dropdown);
+            }
+            
+            positionDropdown();
+            dropdown.classList.add('open');
+            
+            // 点击外部关闭
+            setTimeout(() => document.addEventListener('click', handleClickOutside), 0);
+        };
+
+        const closeDropdown = () => {
+            isOpen = false;
+            wrapper.classList.remove('active');
+            dropdown.classList.remove('open');
+            document.removeEventListener('click', handleClickOutside);
+        };
+        
+        const toggleDropdown = (e) => {
+            e.stopPropagation();
+            if (isOpen) closeDropdown();
+            else openDropdown();
+        };
+
+        const handleClickOutside = (e) => {
+            if (!wrapper.contains(e.target) && !dropdown.contains(e.target)) {
+                closeDropdown();
+            }
+        };
+
+        const handleCloseAll = (e) => {
+            if (e.detail && e.detail.source === wrapper) return;
+            closeDropdown();
+        };
+
+        trigger.addEventListener('click', toggleDropdown);
+        document.addEventListener('Nyou-select-close-all', handleCloseAll);
+        
+        wrapper.appendChild(trigger);
+        // 不再将 dropdown 放入 wrapper，而是动态挂载到 body
+        
+        // 公开方法
+        wrapper.getValue = () => currValue;
+        wrapper.setValue = (v) => {
+            currValue = v;
+            const opt = selectOpts.find(o => o.value === v);
+            if (opt) {
+                trigger.querySelector('.Nyou-select-value').textContent = opt.label;
+                dropdown.querySelectorAll('.Nyou-select-option').forEach(el => el.classList.remove('selected'));
+                const newOptEl = Array.from(dropdown.children).find(el => el.dataset.value === v);
+                if (newOptEl) newOptEl.classList.add('selected');
+            }
+        };
+        
+        // 清理：当 wrapper 从 DOM 移除时，也移除 dropdown
+        let observer = null;
+        if (typeof MutationObserver !== 'undefined') {
+            observer = new MutationObserver(() => {
+                if (!document.body.contains(wrapper)) {
+                    closeDropdown();
+                    if (dropdown.parentElement) dropdown.remove();
+                    document.removeEventListener('Nyou-select-close-all', handleCloseAll);
+                    observer.disconnect();
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+        
+        return wrapper;
+    },
+
+    // ============ 开关 ============
+    Toggle(opts = {}) {
+        const { checked = false, disabled = false, label = '', onChange = null, id = null, className = '' } = opts;
+        const wrapper = this._utils.createElement('label', { className: this._utils.classNames('Nyou-toggle-wrapper', disabled && 'Nyou-toggle-disabled', className), id });
+        const toggle = this._utils.createElement('div', { className: this._utils.classNames('Nyou-toggle', checked && 'active') });
+        toggle.innerHTML = '<div class="Nyou-toggle-track"><div class="Nyou-toggle-thumb"></div></div>';
+        toggle.setAttribute('role', 'switch');
+        toggle.setAttribute('aria-checked', checked ? 'true' : 'false');
+        toggle.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+        toggle.tabIndex = disabled ? -1 : 0;
+
+        const setChecked = (value, notify = false) => {
+            const next = value === true;
+            toggle.classList.toggle('active', next);
+            toggle.setAttribute('aria-checked', next ? 'true' : 'false');
+            if (notify && onChange) {
+                const invokeChange = () => onChange(next);
+                if (typeof SystemInteractionAudio !== 'undefined'
+                    && typeof SystemInteractionAudio.runSilently === 'function') {
+                    SystemInteractionAudio.runSilently(invokeChange);
+                } else {
+                    invokeChange();
+                }
+            }
+        };
+        const toggleChecked = () => setChecked(!toggle.classList.contains('active'), true);
+
+        if (!disabled) {
+            toggle.addEventListener('click', toggleChecked);
+            toggle.addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                toggleChecked();
+            });
+        }
+        wrapper.appendChild(toggle);
+        if (label) wrapper.appendChild(this._utils.createElement('span', { className: 'Nyou-toggle-label', text: label }));
+        wrapper.isChecked = () => toggle.classList.contains('active');
+        wrapper.setChecked = value => setChecked(value, false);
+        return wrapper;
+    },
+
+    // ============ 滑块 ============
+    Slider(opts = {}) {
+        const { min = 0, max = 100, value = 50, step = 1, disabled = false, showValue = false, onChange = null, id = null, className = '' } = opts;
+        const wrapper = this._utils.createElement('div', { className: this._utils.classNames('Nyou-slider-wrapper', disabled && 'Nyou-slider-disabled', className), id });
+        const slider = this._utils.createElement('input', { className: 'Nyou-slider', attrs: { type: 'range', min, max, value, step } });
+        slider.disabled = disabled;
+        let valueEl = null;
+        if (showValue) valueEl = this._utils.createElement('span', { className: 'Nyou-slider-value', text: value });
+        const updateSliderVisual = () => {
+            const minValue = Number(slider.min);
+            const maxValue = Number(slider.max);
+            const currentValue = Number(slider.value);
+            const range = Math.max(1, maxValue - minValue);
+            const progress = Math.max(0, Math.min(100, ((currentValue - minValue) / range) * 100));
+            slider.style.setProperty('--Nyou-slider-progress', progress + '%');
+        };
+        slider.addEventListener('input', e => {
+            updateSliderVisual();
+            onChange && onChange(Number(e.target.value));
+            if (showValue) valueEl.textContent = e.target.value;
+        });
+        updateSliderVisual();
+        wrapper.appendChild(slider);
+        if (showValue) wrapper.appendChild(valueEl);
+        wrapper.getValue = () => Number(slider.value);
+        wrapper.setValue = v => {
+            slider.value = v;
+            updateSliderVisual();
+            if (valueEl) valueEl.textContent = v;
+        };
+        return wrapper;
+    },
+
+    // ============ Custom Scroll Area ============
+    ScrollArea(opts = {}) {
+        const {
+            content = null,
+            maxHeight = null,
+            minThumbSize = 24,
+            alwaysVisible = false,
+            id = null,
+            className = ''
+        } = opts;
+
+        const area = this._utils.createElement('div', {
+            className: this._utils.classNames('Nyou-scroll-area', alwaysVisible && 'Nyou-scroll-always-visible', className),
+            id
+        });
+        const viewport = this._utils.createElement('div', { className: 'Nyou-scroll-viewport' });
+        const rail = this._utils.createElement('div', { className: 'Nyou-scroll-rail' });
+        const thumb = this._utils.createElement('div', { className: 'Nyou-scroll-thumb' });
+        rail.appendChild(thumb);
+        area.appendChild(viewport);
+        area.appendChild(rail);
+
+        if (maxHeight !== null && maxHeight !== undefined) {
+            viewport.style.maxHeight = typeof maxHeight === 'number' ? `${maxHeight}px` : String(maxHeight);
+        }
+
+        const appendContent = (value) => {
+            viewport.innerHTML = '';
+            if (value === null || value === undefined) return;
+            if (typeof value === 'string') {
+                viewport.innerHTML = value;
+                return;
+            }
+            viewport.appendChild(value);
+        };
+        appendContent(content);
+
+        const SCROLLBAR_HIDE_DELAY = 4000;
+        const BOUNCE_MAX_OFFSET = 22;
+        const BOUNCE_MAX_VELOCITY = 10;
+        const BOUNCE_IMPULSE_FACTOR = 0.022;
+        const BOUNCE_IMPULSE_MAX = 4.8;
+        const BOUNCE_SPRING = 0.17;
+        const BOUNCE_DAMPING = 0.8;
+        const BOUNCE_REST_OFFSET = 0.08;
+        const BOUNCE_REST_VELOCITY = 0.08;
+        const useTranslate = ('translate' in viewport.style);
+
+        let hideTimer = null;
+        let dragging = false;
+        let dragStartY = 0;
+        let dragStartScroll = 0;
+        let bounceOffset = 0;
+        let bounceVelocity = 0;
+        let bounceRafId = 0;
+
+        const getMetrics = () => {
+            const viewportHeight = viewport.clientHeight;
+            const scrollHeight = viewport.scrollHeight;
+            const maxScroll = Math.max(0, scrollHeight - viewportHeight);
+            const trackHeight = rail.clientHeight || viewportHeight;
+            return { viewportHeight, scrollHeight, maxScroll, trackHeight };
+        };
+
+        const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+        const applyBounceOffset = () => {
+            if (Math.abs(bounceOffset) < 0.01) {
+                if (useTranslate) {
+                    viewport.style.translate = '';
+                } else {
+                    viewport.style.transform = '';
+                }
+                viewport.style.willChange = '';
+                return;
+            }
+            viewport.style.willChange = 'transform';
+            if (useTranslate) {
+                viewport.style.translate = `0 ${bounceOffset.toFixed(3)}px`;
+            } else {
+                viewport.style.transform = `translate3d(0, ${bounceOffset.toFixed(3)}px, 0)`;
+            }
+        };
+
+        const stopBounce = () => {
+            if (bounceRafId) {
+                cancelAnimationFrame(bounceRafId);
+                bounceRafId = 0;
+            }
+            bounceOffset = 0;
+            bounceVelocity = 0;
+            applyBounceOffset();
+        };
+
+        const startBounceLoop = () => {
+            if (bounceRafId) return;
+            const tick = () => {
+                if (!viewport.isConnected) {
+                    stopBounce();
+                    return;
+                }
+                const prevOffset = bounceOffset;
+                bounceVelocity += (-bounceOffset) * BOUNCE_SPRING;
+                bounceVelocity *= BOUNCE_DAMPING;
+                const nextOffset = clamp(bounceOffset + bounceVelocity, -BOUNCE_MAX_OFFSET, BOUNCE_MAX_OFFSET);
+                const crossedZero = (prevOffset > 0 && nextOffset < 0) || (prevOffset < 0 && nextOffset > 0);
+                if (crossedZero) {
+                    stopBounce();
+                    return;
+                }
+                bounceOffset = nextOffset;
+                applyBounceOffset();
+
+                if (Math.abs(bounceOffset) <= BOUNCE_REST_OFFSET && Math.abs(bounceVelocity) <= BOUNCE_REST_VELOCITY) {
+                    stopBounce();
+                    return;
+                }
+                bounceRafId = requestAnimationFrame(tick);
+            };
+            bounceRafId = requestAnimationFrame(tick);
+        };
+
+        const pushBounceImpulse = (deltaY) => {
+            const impulse = clamp(-deltaY * BOUNCE_IMPULSE_FACTOR, -BOUNCE_IMPULSE_MAX, BOUNCE_IMPULSE_MAX);
+            bounceVelocity = clamp(bounceVelocity + impulse, -BOUNCE_MAX_VELOCITY, BOUNCE_MAX_VELOCITY);
+            bounceOffset = clamp(bounceOffset + impulse * 0.55, -BOUNCE_MAX_OFFSET, BOUNCE_MAX_OFFSET);
+            applyBounceOffset();
+            startBounceLoop();
+        };
+
+        const refresh = () => {
+            const { viewportHeight, scrollHeight, maxScroll, trackHeight } = getMetrics();
+            if (scrollHeight <= viewportHeight + 1 || viewportHeight <= 0) {
+                area.classList.add('no-scroll');
+                thumb.style.height = '0px';
+                thumb.style.transform = 'translateY(0)';
+                return;
+            }
+
+            area.classList.remove('no-scroll');
+            const thumbHeight = Math.max(minThumbSize, Math.round((viewportHeight / scrollHeight) * trackHeight));
+            thumb.style.height = `${Math.min(trackHeight, thumbHeight)}px`;
+
+            const trackRange = Math.max(1, trackHeight - thumb.offsetHeight);
+            const thumbTop = (viewport.scrollTop / maxScroll) * trackRange;
+            thumb.style.transform = `translateY(${thumbTop}px)`;
+        };
+
+        const markScrolling = () => {
+            area.classList.add('scrolling');
+            clearTimeout(hideTimer);
+            if (alwaysVisible) return;
+            hideTimer = setTimeout(() => area.classList.remove('scrolling'), SCROLLBAR_HIDE_DELAY);
+        };
+
+        const setScrollByThumbTop = (top) => {
+            const { trackHeight, maxScroll } = getMetrics();
+            if (maxScroll <= 0) return;
+            const trackRange = Math.max(1, trackHeight - thumb.offsetHeight);
+            const clampedTop = Math.min(trackRange, Math.max(0, top));
+            viewport.scrollTop = (clampedTop / trackRange) * maxScroll;
+        };
+
+        const onPointerMove = (e) => {
+            if (!dragging) return;
+            const delta = e.clientY - dragStartY;
+            const { trackHeight, maxScroll } = getMetrics();
+            if (maxScroll <= 0) return;
+            const trackRange = Math.max(1, trackHeight - thumb.offsetHeight);
+            const nextScroll = dragStartScroll + (delta / trackRange) * maxScroll;
+            viewport.scrollTop = Math.min(maxScroll, Math.max(0, nextScroll));
+        };
+
+        const stopDrag = () => {
+            if (!dragging) return;
+            dragging = false;
+            area.classList.remove('dragging');
+            window.removeEventListener('pointermove', onPointerMove);
+            window.removeEventListener('pointerup', stopDrag);
+        };
+
+        thumb.addEventListener('pointerdown', (e) => {
+            if (area.classList.contains('no-scroll')) return;
+            e.preventDefault();
+            dragging = true;
+            dragStartY = e.clientY;
+            dragStartScroll = viewport.scrollTop;
+            area.classList.add('dragging');
+            window.addEventListener('pointermove', onPointerMove);
+            window.addEventListener('pointerup', stopDrag, { once: true });
+        });
+
+        rail.addEventListener('mousedown', (e) => {
+            if (e.target === thumb || area.classList.contains('no-scroll')) return;
+            const railRect = rail.getBoundingClientRect();
+            const targetTop = e.clientY - railRect.top - thumb.offsetHeight / 2;
+            setScrollByThumbTop(targetTop);
+        });
+
+        const onWheel = (e) => {
+            if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+            const { maxScroll } = getMetrics();
+            if (maxScroll <= 0) return;
+
+            const atTop = viewport.scrollTop <= 0;
+            const atBottom = viewport.scrollTop >= maxScroll - 1;
+            if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom)) {
+                e.preventDefault();
+                pushBounceImpulse(e.deltaY);
+                markScrolling();
+                return;
+            }
+
+            markScrolling();
+        };
+
+        viewport.addEventListener('wheel', onWheel, { passive: false });
+
+        viewport.addEventListener('scroll', () => {
+            refresh();
+            markScrolling();
+        });
+
+        const onResize = () => refresh();
+        window.addEventListener('resize', onResize);
+
+        let resizeObserver = null;
+        if (typeof ResizeObserver !== 'undefined') {
+            resizeObserver = new ResizeObserver(() => refresh());
+            resizeObserver.observe(viewport);
+        }
+
+        let mutationObserver = null;
+        if (typeof MutationObserver !== 'undefined') {
+            mutationObserver = new MutationObserver(() => refresh());
+            mutationObserver.observe(viewport, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+        }
+
+        area.getViewport = () => viewport;
+        area.setContent = (nextContent) => {
+            appendContent(nextContent);
+            refresh();
+        };
+        area.refresh = refresh;
+        area.destroy = () => {
+            stopDrag();
+            clearTimeout(hideTimer);
+            stopBounce();
+            viewport.removeEventListener('wheel', onWheel);
+            window.removeEventListener('resize', onResize);
+            if (resizeObserver) resizeObserver.disconnect();
+            if (mutationObserver) mutationObserver.disconnect();
+        };
+
+        requestAnimationFrame(refresh);
+        return area;
+    },
+
+    // ============ 右键菜单 ============
+    ContextMenu(opts = {}) {
+        const { items = [], id = null, className = '' } = opts;
+        const menu = this._utils.createElement('div', { className: this._utils.classNames('Nyou-context-menu', className), id: id || this._utils.generateId('ctx-menu') });
+        items.forEach(item => {
+            if (item.separator) { menu.appendChild(this._utils.createElement('div', { className: 'Nyou-context-menu-separator' })); return; }
+            const el = this._utils.createElement('div', { className: this._utils.classNames('Nyou-context-menu-item', item.disabled && 'disabled'), data: { action: item.action || item.id } });
+            el.innerHTML = (item.icon ? `<img src="${this._utils.getIconPath(item.icon)}" alt="">` : '') + `<span>${item.label}</span>`;
+            if (!item.disabled && item.onClick) el.addEventListener('click', () => { item.onClick(item); menu.hide(); });
+            menu.appendChild(el);
+        });
+        menu.hide = () => menu.classList.add('hidden');
+        menu.show = (x, y) => { menu.classList.remove('hidden'); const rect = menu.getBoundingClientRect(); menu.style.left = `${Math.min(x, window.innerWidth - rect.width - 4)}px`; menu.style.top = `${Math.min(y, window.innerHeight - rect.height - 4)}px`; };
+        menu.classList.add('hidden');
+        return menu;
+    },
+
+    // ============ 模态对话框 ============
+    Modal(opts = {}) {
+        const { title = '', content = '', buttons = [], closable = true, width = '400px', onClose = null, id = null, className = '' } = opts;
+        const overlay = this._utils.createElement('div', { className: this._utils.classNames('Nyou-modal-overlay', className), id });
+        const modal = this._utils.createElement('div', { className: 'Nyou-modal', styles: { width } });
+        
+        let html = '<div class="Nyou-modal-header">';
+        html += `<span class="Nyou-modal-title">${title}</span>`;
+        if (closable) html += `<button type="button" class="Nyou-modal-close"><img src="${this._utils.getIconPath('Cancel')}" alt="关闭"></button>`;
+        html += '</div>';
+        html += `<div class="Nyou-modal-content">${typeof content === 'string' ? content : ''}</div>`;
+        if (buttons.length > 0) {
+            html += '<div class="Nyou-modal-footer">';
+            buttons.forEach((btn, i) => { html += `<button type="button" class="nyou-btn nyou-btn-${btn.variant || (i === buttons.length - 1 ? 'primary' : 'secondary')}" data-btn-idx="${i}">${btn.text}</button>`; });
+            html += '</div>';
+        }
+        modal.innerHTML = html;
+        
+        if (typeof content !== 'string') modal.querySelector('.Nyou-modal-content').appendChild(content);
+        
+        const close = () => { overlay.classList.add('closing'); setTimeout(() => overlay.remove(), 200); onClose && onClose(); };
+        if (closable) { modal.querySelector('.Nyou-modal-close').addEventListener('click', close); overlay.addEventListener('click', e => { if (e.target === overlay) close(); }); }
+        buttons.forEach((btn, i) => { modal.querySelector(`[data-btn-idx="${i}"]`).addEventListener('click', () => { btn.onClick && btn.onClick(); if (btn.closeOnClick !== false) close(); }); });
+        
+        overlay.appendChild(modal);
+        overlay.close = close;
+        overlay.show = () => {
+            document.body.appendChild(overlay);
+            if (typeof SystemInteractionAudio !== 'undefined') {
+                SystemInteractionAudio.playDialog('info');
+            }
+        };
+        return overlay;
+    },
+
+    // ============ 卡片 ============
+    Card(opts = {}) {
+        const { title = '', content = '', footer = '', hoverable = false, id = null, className = '' } = opts;
+        const card = this._utils.createElement('div', { className: this._utils.classNames('Nyou-card', hoverable && 'Nyou-card-hoverable', className), id });
+        let html = '';
+        if (title) html += `<div class="Nyou-card-header"><span class="Nyou-card-title">${title}</span></div>`;
+        html += `<div class="Nyou-card-body">${typeof content === 'string' ? content : ''}</div>`;
+        if (footer) html += `<div class="Nyou-card-footer">${footer}</div>`;
+        card.innerHTML = html;
+        if (typeof content !== 'string') card.querySelector('.Nyou-card-body').appendChild(content);
+        return card;
+    },
+
+    // ============ 列表 ============
+    List(opts = {}) {
+        const { items = [], onItemClick = null, selectable = false, activeItem = null, id = null, className = '' } = opts;
+        const list = this._utils.createElement('div', { className: this._utils.classNames('Nyou-list', selectable && 'Nyou-list-selectable', className), id });
+        items.forEach(item => {
+            const el = this._utils.createElement('div', { className: this._utils.classNames('Nyou-list-item', item.id === activeItem && 'active'), data: { id: item.id } });
+            let html = '';
+            if (item.icon) html += `<img src="${this._utils.getIconPath(item.icon)}" class="Nyou-list-item-icon" alt="">`;
+            html += '<div class="Nyou-list-item-content">';
+            html += `<div class="Nyou-list-item-title">${item.title || item.label}</div>`;
+            if (item.description) html += `<div class="Nyou-list-item-desc">${item.description}</div>`;
+            html += '</div>';
+            if (item.extra) html += `<div class="Nyou-list-item-extra">${item.extra}</div>`;
+            el.innerHTML = html;
+            el.addEventListener('click', () => onItemClick && onItemClick(item.id, item));
+            list.appendChild(el);
+        });
+        return list;
+    },
+
+    // ============ 进度条 ============
+    Progress(opts = {}) {
+        const { value = 0, max = 100, showLabel = false, variant = 'default', id = null, className = '' } = opts;
+        const wrapper = this._utils.createElement('div', { className: this._utils.classNames('Nyou-progress', `Nyou-progress-${variant}`, className), id });
+        const track = this._utils.createElement('div', { className: 'Nyou-progress-track' });
+        const bar = this._utils.createElement('div', { className: 'Nyou-progress-bar', styles: { width: `${(value / max) * 100}%` } });
+        track.appendChild(bar);
+        wrapper.appendChild(track);
+        if (showLabel) wrapper.appendChild(this._utils.createElement('span', { className: 'Nyou-progress-label', text: `${Math.round((value / max) * 100)}%` }));
+        wrapper.setValue = v => { bar.style.width = `${(v / max) * 100}%`; const label = wrapper.querySelector('.Nyou-progress-label'); if (label) label.textContent = `${Math.round((v / max) * 100)}%`; };
+        return wrapper;
+    },
+
+    // ============ 加载指示器 ============
+    Spinner(opts = {}) {
+        const { size = 'medium', id = null, className = '' } = opts;
+        return this._utils.createElement('div', { className: this._utils.classNames('Nyou-spinner', `Nyou-spinner-${size}`, className), id });
+    },
+
+    // ============ 设置项组件 ============
+    SettingItem(opts = {}) {
+        const { label = '', description = '', control = null, id = null, className = '' } = opts;
+        const item = this._utils.createElement('div', { className: this._utils.classNames('Nyou-setting-item', className), id });
+        item.innerHTML = `<div class="Nyou-setting-item-info"><div class="Nyou-setting-item-label">${label}</div>${description ? `<div class="Nyou-setting-item-desc">${description}</div>` : ''}</div><div class="Nyou-setting-item-control"></div>`;
+        if (control) item.querySelector('.Nyou-setting-item-control').appendChild(control);
+        return item;
+    },
+
+    // ============ 空状态 ============
+    Empty(opts = {}) {
+        const { icon = 'Information Circle', title = '暂无数据', description = '', id = null, className = '' } = opts;
+        const empty = this._utils.createElement('div', { className: this._utils.classNames('Nyou-empty', className), id });
+        empty.innerHTML = `<img src="${this._utils.getIconPath(icon)}" class="Nyou-empty-icon" alt=""><div class="Nyou-empty-title">${title}</div>${description ? `<div class="Nyou-empty-desc">${description}</div>` : ''}`;
+        return empty;
+    },
+
+    // ============ 警告框/对话框 ============
+    Dialog(opts = {}) {
+        const { 
+            type = 'info',  // 'info' | 'success' | 'warning' | 'error'
+            title = '',
+            content = '',
+            buttons = [{ text: '确定', variant: 'primary' }],  // 支持1-3个按钮
+            onClose = null,
+            closeOnOverlay = true
+        } = opts;
+        
+        // 类型对应的图标和标题
+        const typeConfig = {
+            info: { icon: 'Information Circle', defaultTitle: '提示' },
+            success: { icon: 'Check Circle', defaultTitle: '成功' },
+            warning: { icon: 'Question Mark Circle', defaultTitle: '警告' },
+            error: { icon: 'Question Mark Circle', defaultTitle: '错误' }
+        };
+        const config = typeConfig[type] || typeConfig.info;
+        const dialogTitle = title || config.defaultTitle;
+        
+        // 创建遮罩层
+        const overlay = this._utils.createElement('div', { className: 'Nyou-dialog-overlay' });
+        
+        // 创建对话框
+        const dialog = this._utils.createElement('div', { 
+            className: this._utils.classNames('Nyou-dialog', `Nyou-dialog-${type}`)
+        });
+        
+        // 对话框内容
+        dialog.innerHTML = `
+            <div class="Nyou-dialog-header">
+                <img src="${this._utils.getIconPath(config.icon)}" class="Nyou-dialog-icon" alt="">
+                <span class="Nyou-dialog-title">${dialogTitle}</span>
+            </div>
+            <div class="Nyou-dialog-content">${content}</div>
+            <div class="Nyou-dialog-footer"></div>
+        `;
+        
+        const footer = dialog.querySelector('.Nyou-dialog-footer');
+        
+        // 关闭对话框的方法
+        const close = (result) => {
+            overlay.classList.add('Nyou-dialog-closing');
+            dialog.classList.add('Nyou-dialog-closing');
+            setTimeout(() => {
+                overlay.remove();
+                if (onClose) onClose(result);
+            }, 200);
+        };
+        
+        // 添加按钮
+        buttons.slice(0, 3).forEach((btn, index) => {
+            const button = this.Button({
+                text: btn.text || '按钮',
+                variant: btn.variant || (index === 0 ? 'primary' : 'secondary'),
+                onClick: () => close(btn.value !== undefined ? btn.value : index)
+            });
+            footer.appendChild(button);
+        });
+        
+        // 点击遮罩关闭
+        if (closeOnOverlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) close(null);
+            });
+        }
+        
+        overlay.appendChild(dialog);
+        document.body.appendChild(overlay);
+        if (typeof SystemInteractionAudio !== 'undefined') {
+            SystemInteractionAudio.playDialog(type);
+        }
+        
+        // 触发动画
+        requestAnimationFrame(() => {
+            overlay.classList.add('Nyou-dialog-visible');
+            dialog.classList.add('Nyou-dialog-visible');
+        });
+        
+        return { close, overlay, dialog };
+    },
+
+    // ============ 输入对话框 ============
+    InputDialog(opts = {}) {
+        const {
+            title = '输入',
+            placeholder = '',
+            defaultValue = '',
+            inputType = 'text',  // 'text' | 'password' | 'number'
+            maxLength = null,
+            minLength = null,
+            validateFn = null,  // 自定义验证函数
+            errorMessage = '输入无效',
+            confirmText = '确定',
+            cancelText = '取消',
+            onConfirm = null,
+            onCancel = null,
+            closeOnOverlay = true
+        } = opts;
+        
+        // 创建遮罩层
+        const overlay = this._utils.createElement('div', { className: 'Nyou-dialog-overlay' });
+        
+        // 创建对话框
+        const dialog = this._utils.createElement('div', { 
+            className: 'Nyou-dialog Nyou-input-dialog'
+        });
+        
+        // 对话框内容
+        dialog.innerHTML = `
+            <div class="Nyou-dialog-header">
+                <span class="Nyou-dialog-title">${title}</span>
+            </div>
+            <div class="Nyou-dialog-content">
+                <div class="Nyou-input-wrapper">
+                    <input type="${inputType}" 
+                           class="Nyou-input-dialog-input" 
+                           placeholder="${placeholder}"
+                           value="${defaultValue}"
+                           ${maxLength ? `maxlength="${maxLength}"` : ''}
+                           ${minLength ? `minlength="${minLength}"` : ''}>
+                    <div class="Nyou-input-error" style="display: none;">${errorMessage}</div>
+                </div>
+            </div>
+            <div class="Nyou-dialog-footer"></div>
+        `;
+        
+        const input = dialog.querySelector('.Nyou-input-dialog-input');
+        const errorEl = dialog.querySelector('.Nyou-input-error');
+        const footer = dialog.querySelector('.Nyou-dialog-footer');
+        
+        // 关闭对话框的方法
+        const close = (confirmed, value) => {
+            overlay.classList.add('Nyou-dialog-closing');
+            dialog.classList.add('Nyou-dialog-closing');
+            setTimeout(() => {
+                overlay.remove();
+                if (confirmed && onConfirm) {
+                    onConfirm(value);
+                } else if (!confirmed && onCancel) {
+                    onCancel();
+                }
+            }, 200);
+        };
+        
+        // 验证输入
+        const validate = () => {
+            const value = input.value.trim();
+            
+            // 检查最小长度
+            if (minLength && value.length < minLength) {
+                errorEl.textContent = `最少需要 ${minLength} 个字符`;
+                errorEl.style.display = 'block';
+                input.classList.add('error');
+                return false;
+            }
+            
+            // 自定义验证
+            if (validateFn) {
+                const result = validateFn(value);
+                if (result !== true) {
+                    errorEl.textContent = typeof result === 'string' ? result : errorMessage;
+                    errorEl.style.display = 'block';
+                    input.classList.add('error');
+                    return false;
+                }
+            }
+            
+            errorEl.style.display = 'none';
+            input.classList.remove('error');
+            return true;
+        };
+        
+        // 添加取消按钮
+        footer.appendChild(this.Button({
+            text: cancelText,
+            variant: 'secondary',
+            onClick: () => close(false)
+        }));
+        
+        // 添加确定按钮
+        footer.appendChild(this.Button({
+            text: confirmText,
+            variant: 'primary',
+            onClick: () => {
+                if (validate()) {
+                    close(true, input.value.trim());
+                }
+            }
+        }));
+        
+        // 输入时清除错误状态
+        input.addEventListener('input', () => {
+            errorEl.style.display = 'none';
+            input.classList.remove('error');
+        });
+        
+        // 回车确认
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (validate()) {
+                    close(true, input.value.trim());
+                }
+            } else if (e.key === 'Escape') {
+                close(false);
+            }
+        });
+        
+        // 点击遮罩关闭
+        if (closeOnOverlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) close(false);
+            });
+        }
+        
+        overlay.appendChild(dialog);
+        document.body.appendChild(overlay);
+        if (typeof SystemInteractionAudio !== 'undefined') {
+            SystemInteractionAudio.playDialog('input');
+        }
+        
+        // 触发动画并聚焦输入框
+        requestAnimationFrame(() => {
+            overlay.classList.add('Nyou-dialog-visible');
+            dialog.classList.add('Nyou-dialog-visible');
+            input.focus();
+            input.select();
+        });
+        
+        return { close, overlay, dialog, input };
+    },
+
+    // ============ 通知组件 ============
+    _toastContainer: null,
+    
+    Toast(opts = {}) {
+        const {
+            title = '',
+            message = '',
+            type = 'info',  // 'info' | 'success' | 'warning' | 'error'
+            duration = 5000,  // 显示时间，毫秒
+            icon = null,
+            onClick = null,
+            onClose = null
+        } = opts;
+        
+        // 类型对应的图标
+        const typeIcons = {
+            info: 'Information Circle',
+            success: 'Check Circle',
+            warning: 'Question Mark Circle',
+            error: 'Question Mark Circle'
+        };
+        const toastIcon = icon || typeIcons[type] || typeIcons.info;
+        
+        // 创建或获取通知容器
+        if (!this._toastContainer) {
+            this._toastContainer = this._utils.createElement('div', { className: 'Nyou-toast-container' });
+            document.body.appendChild(this._toastContainer);
+        }
+        
+        // 创建通知元素
+        const toast = this._utils.createElement('div', {
+            className: this._utils.classNames('Nyou-toast', `Nyou-toast-${type}`)
+        });
+        
+        toast.innerHTML = `
+            <div class="Nyou-toast-icon">
+                <img src="${this._utils.getIconPath(toastIcon)}" alt="">
+            </div>
+            <div class="Nyou-toast-body">
+                ${title ? '<div class="Nyou-toast-title"></div>' : ''}
+                ${message ? '<div class="Nyou-toast-message"></div>' : ''}
+            </div>
+            <button type="button" class="Nyou-toast-close">
+                <img src="${this._utils.getIconPath('Cancel')}" alt="关闭">
+            </button>
+        `;
+
+        const titleElement = toast.querySelector('.Nyou-toast-title');
+        const messageElement = toast.querySelector('.Nyou-toast-message');
+        if (titleElement) titleElement.textContent = title;
+        if (messageElement) messageElement.textContent = message;
+        
+        // 关闭通知的方法
+        let closed = false;
+        const close = () => {
+            if (closed) return;
+            closed = true;
+            toast.classList.add('Nyou-toast-exit');
+            if (typeof onClose === 'function') onClose();
+            setTimeout(() => {
+                toast.remove();
+                // 如果没有通知了，移除容器
+                if (this._toastContainer && this._toastContainer.children.length === 0) {
+                    this._toastContainer.remove();
+                    this._toastContainer = null;
+                }
+            }, 300);
+        };
+        
+        // 绑定关闭按钮
+        toast.querySelector('.Nyou-toast-close').addEventListener('click', (e) => {
+            e.stopPropagation();
+            close();
+        });
+        
+        // 点击通知
+        if (onClick) {
+            toast.style.cursor = 'pointer';
+            toast.addEventListener('click', () => {
+                onClick();
+                close();
+            });
+        }
+        
+        // 添加到容器
+        this._toastContainer.appendChild(toast);
+        if (typeof SystemInteractionAudio !== 'undefined') {
+            SystemInteractionAudio.playNotification(type);
+        }
+        
+        // 触发入场动画
+        requestAnimationFrame(() => {
+            toast.classList.add('Nyou-toast-enter');
+        });
+        
+        // 自动关闭
+        if (duration > 0) {
+            setTimeout(close, duration);
+        }
+        
+        return { close, element: toast };
+    }
+};
+
+// 导出到全局
+if (typeof window !== 'undefined') {
+    window.NyouUI = NyouUI;
+}
