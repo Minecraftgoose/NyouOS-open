@@ -33,7 +33,9 @@ NyouOS 采用纯原生技术栈开发，无框架依赖，确保极致性能和�
 # 关于本仓库
 本项目为[NyouOS](https://space.bilibili.com/3546832275769548) 开发的**纯前端**（用户数据除外）web操作系统
 
-由于原项目声明不开源，所以请您看见此仓库不要声张
+由于原项目声明不开源，所以请您看见此仓库不要声张，[原项目仓库地址](https://github.com/Kevinananda2026/nyouos-new)
+
+本仓库将原项目冗余的**图片资源**进行压缩和删减，本项目并非clone自[原仓库](https://github.com/Kevinananda2026/nyouos-new/tree/master)，本仓库源码或取方式为Python脚本从[NyouOS官网](https://nyouos.pages.dev/)下载
 
 > 不得不说这图片是真多
 
