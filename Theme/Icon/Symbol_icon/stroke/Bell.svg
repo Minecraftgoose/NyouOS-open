@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NyouOS - 官方网站</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="27.0/Theme/Icon/Nyou_logo.png" type="image/png">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <img src="27.0/Theme/Icon/Nyou_logo.png" alt="NyouOS">
+                <span>NyouOS</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#about" data-i18n="nav.about">关于</a></li>
+                <li><a href="#features" data-i18n="nav.features">特性</a></li>
+                <li><a href="#apps" data-i18n="nav.apps">应用</a></li>
+                <li><a href="#gallery" data-i18n="nav.gallery">截图</a></li>
+                <li><a href="#compare" data-i18n="nav.compare">对比</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="lang-switch" onclick="toggleLang()" id="langBtn">EN</button>
+                <a href="27.0/index.html" class="btn-primary" data-i18n="nav.cta">立即前往</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title"><span data-i18n="hero.title1">NyouOS</span> <span data-i18n="hero.title2">On Web</span></h1>
+                <p class="hero-subtitle" data-i18n="hero.subtitle">基于 Fluent Design 理念，专为 Web 打造的现代化操作系统体验</p>
+                <div class="hero-actions">
+                    <a href="27.0/index.html" class="btn-large" data-i18n="hero.cta">立即前往</a>
+                    <a href="#about" class="btn-large btn-secondary" data-i18n="hero.learn">了解更多</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number" data-target="50">0</span><span>+</span>
+                        <span class="stat-label" data-i18n="hero.stat1">内置应用</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="100">0</span><span>%</span>
+                        <span class="stat-label" data-i18n="hero.stat2">浏览器运行</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="3">0</span><span>s</span>
+                        <span class="stat-label" data-i18n="hero.stat3">极速启动</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-mockup">
+                    <div class="mockup-window">
+                        <div class="mockup-titlebar">
+                            <span class="mockup-dot red"></span>
+                            <span class="mockup-dot yellow"></span>
+                            <span class="mockup-dot green"></span>
+                            <span>NyouOS Desktop</span>
+                        </div>
+                        <div class="mockup-body">
+                            <img src="27.0/Theme/Preload/Tips/new_features/design.png" alt="NyouOS Screenshot">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 问问 Surf AI -->
+    <section class="ai-section" id="ai">
+        <div class="container">
+            <h2 class="section-title" data-i18n="ai.title">问问 Surf</h2>
+            <p class="section-subtitle" data-i18n="ai.subtitle">NyouOS 智能助手，随时为你解答问题</p>
+            <div class="ai-chat-container">
+                <div class="ai-chat-messages" id="aiMessages">
+                    <div class="ai-message ai-bot">
+                        <div class="ai-avatar">S</div>
+                        <div class="ai-bubble" data-i18n="ai.welcome">你好！我是 Surf，NyouOS 的智能助手。有什么可以帮你的吗？</div>
+                    </div>
+                </div>
+                <div class="ai-chat-input">
+                    <input type="text" id="aiInput" placeholder="输入你的问题..." data-i18n-placeholder="ai.placeholder">
+                    <button onclick="sendAiMessage()" class="ai-send-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+                <div class="ai-suggestions">
+                    <button onclick="askAi('NyouOS是什么？')" data-i18n="ai.suggest1">NyouOS是什么？</button>
+                    <button onclick="askAi('有哪些应用？')" data-i18n="ai.suggest2">有哪些应用？</button>
+                    <button onclick="askAi('如何安装？')" data-i18n="ai.suggest3">如何安装？</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 什么是 NyouOS -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="section-title" data-i18n="about.title">什么是 NyouOS？</h2>
+                    <p data-i18n="about.p1">NyouOS On Web 是一款完全运行在浏览器中的现代化操作系统，基于 Fluent Design 设计理念，为用户提供接近原生操作系统的完整体验。</p>
+                    <p data-i18n="about.p2">无需下载安装，打开浏览器即可使用。支持文件管理、应用商店、AI 助手、多任务窗口管理等完整功能，让你的浏览器变成一台真正的电脑。</p>
+                    <p data-i18n="about.p3">NyouOS 采用纯原生技术栈开发，无框架依赖，确保极致性能和流畅体验。所有数据本地存储，隐私安全由你掌控。</p>
+                    <div class="about-features">
+                        <div class="about-feature">
+                            <span class="about-feature-icon">⚡</span>
+                            <span data-i18n="about.f1">3秒极速启动</span>
+                        </div>
+                        <div class="about-feature">
+                            <span class="about-feature-icon">🎨</span>
+                            <span data-i18n="about.f2">Fluent Design</span>
+                        </div>
+                        <div class="about-feature">
+                            <span class="about-feature-icon">🔒</span>
+                            <span data-i18n="about.f3">本地数据存储</span>
+                        </div>
+                        <div class="about-feature">
+                            <span class="about-feature-icon">🤖</span>
+                            <span data-i18n="about.f4">内置 AI 助手</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <img src="27.0/Theme/Preload/Tips/new_features/productivity.png" alt="NyouOS Interface">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 启动时间动画 -->
+    <section class="boot-section">
+        <div class="container">
+            <h2 class="section-title" data-i18n="boot.title">极速启动，即刻体验</h2>
+            <p class="section-subtitle" data-i18n="boot.subtitle">从打开到进入桌面，只需短短几秒</p>
+            <div class="boot-animation">
+                <div class="boot-timer">
+                    <span class="boot-number" id="bootNumber">0</span>
+                    <span class="boot-unit">s</span>
+                </div>
+                <div class="boot-progress">
+                    <div class="boot-progress-bar" id="bootProgress"></div>
+                </div>
+                <div class="boot-stages">
+                    <div class="boot-stage" data-stage="0">
+                        <span class="boot-stage-icon">🌐</span>
+                        <span data-i18n="boot.s1">加载页面</span>
+                    </div>
+                    <div class="boot-stage" data-stage="1">
+                        <span class="boot-stage-icon">⚙️</span>
+                        <span data-i18n="boot.s2">初始化系统</span>
+                    </div>
+                    <div class="boot-stage" data-stage="2">
+                        <span class="boot-stage-icon">🎨</span>
+                        <span data-i18n="boot.s3">渲染界面</span>
+                    </div>
+                    <div class="boot-stage" data-stage="3">
+                        <span class="boot-stage-icon">✅</span>
+                        <span data-i18n="boot.s4">进入桌面</span>
+                    </div>
+                </div>
+                <button class="btn-large boot-replay" onclick="replayBootAnimation()" data-i18n="boot.replay">重新播放</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性 -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title" data-i18n="features.title">为什么选择 NyouOS？</h2>
+            <p class="section-subtitle" data-i18n="features.subtitle">融合 Fluent Design 与现代 Web 技术，打造最流畅的浏览器操作系统体验</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <img src="27.0/Theme/Icon/Symbol_icon/fill/Earth.svg" alt="Fluent Design" class="feature-icon">
+                    <h3 data-i18n="features.f1.title">Fluent Design</h3>
+                    <p data-i18n="features.f1.desc">毛玻璃效果、圆角设计、流畅动画，每一处细节都经过精心打磨</p>
+                </div>
+                <div class="feature-card">
+                    <img src="27.0/Theme/Icon/Symbol_icon/fill/Download.svg" alt="Speed" class="feature-icon">
+                    <h3 data-i18n="features.f2.title">极速启动</h3>
+                    <p data-i18n="features.f2.desc">纯原生实现，零框架依赖，秒级加载，丝滑过渡</p>
+                </div>
+                <div class="feature-card">
+                    <img src="27.0/Theme/Icon/Symbol_icon/fill/Folder.svg" alt="Storage" class="feature-icon">
+                    <h3 data-i18n="features.f3.title">本地持久化</h3>
+                    <p data-i18n="features.f3.desc">localStorage 存储所有设置和数据，隐私安全完全由你掌控</p>
+                </div>
+                <div class="feature-card">
+                    <img src="27.0/Theme/Icon/Symbol_icon/fill/Moon.svg" alt="Theme" class="feature-icon">
+                    <h3 data-i18n="features.f4.title">主题切换</h3>
+                    <p data-i18n="features.f4.desc">支持浅色/深色主题，自适应系统偏好，视觉舒适</p>
+                </div>
+                <div class="feature-card">
+                    <img src="27.0/Theme/Icon/Symbol_icon/fill/Smartphone.svg" alt="Responsive" class="feature-icon">
+                    <h3 data-i18n="features.f5.title">响应式设计</h3>
+                    <p data-i18n="features.f5.desc">从手机到桌面，完美适配各种屏幕尺寸</p>
+                </div>
+                <div class="feature-card">
+                    <img src="27.0/Theme/Icon/Symbol_icon/stroke/Message Round.svg" alt="AI" class="feature-icon">
+                    <h3 data-i18n="features.f6.title">AI 助手</h3>
+                    <p data-i18n="features.f6.desc">内置 Surf AI，支持 OpenAI 兼容接口，智能对话随时在线</p>
+                </div>
+                <div class="feature-card">
+                    <img src="27.0/Theme/Icon/Symbol_icon/fill/Database 2.svg" alt="Cloud" class="feature-icon">
+                    <h3 data-i18n="features.f7.title">Supabase 集成</h3>
+                    <p data-i18n="features.f7.desc">云端账号同步，跨设备数据互通，登录安全有保障</p>
+                </div>
+                <div class="feature-card">
+                    <img src="27.0/Theme/Icon/Symbol_icon/fill/Scan.svg" alt="Gesture" class="feature-icon">
+                    <h3 data-i18n="features.f8.title">手势控制</h3>
+                    <p data-i18n="features.f8.desc">MediaPipe 驱动，摄像头手势交互，科技感十足</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 应用生态 -->
+    <section class="apps" id="apps">
+        <div class="container">
+            <h2 class="section-title" data-i18n="apps.title">丰富的应用生态</h2>
+            <p class="section-subtitle" data-i18n="apps.subtitle">50+ 内置应用，涵盖生产力、娱乐、工具全场景</p>
+            <div class="apps-grid">
+                <div class="app-card featured">
+                    <img src="27.0/Theme/Icon/Symbol_icon/stroke/Message Round.svg" alt="Surf AI" class="app-icon">
+                    <h3 data-i18n="apps.a1.title">Surf AI 助手</h3>
+                    <p data-i18n="apps.a1.desc">你的智能对话伙伴</p>
+                </div>
+                <div class="app-card">
+                    <img src="27.0/Theme/Icon/App_icon/files.png" alt="Files" class="app-icon">
+                    <h3 data-i18n="apps.a2.title">文件管理器</h3>
+                    <p data-i18n="apps.a2.desc">虚拟文件系统管理</p>
+                </div>
+                <div class="app-card">
+                    <img src="27.0/Theme/Icon/App_icon/Taskmgr.png" alt="Monitor" class="app-icon">
+                    <h3 data-i18n="apps.a3.title">系统监控</h3>
+                    <p data-i18n="apps.a3.desc">实时资源监控</p>
+                </div>
+                <div class="app-card">
+                    <img src="27.0/Theme/Icon/App_icon/settings.png" alt="Settings" class="app-icon">
+                    <h3 data-i18n="apps.a4.title">系统设置</h3>
+                    <p data-i18n="apps.a4.desc">全面个性化配置</p>
+                </div>
+                <div class="app-card">
+                    <img src="27.0/Theme/Preload/Tips/new_features/app_shop.png" alt="App Shop" class="app-icon">
+                    <h3 data-i18n="apps.a5.title">App Shop</h3>
+                    <p data-i18n="apps.a5.desc">更多应用等你探索</p>
+                </div>
+                <div class="app-card">
+                    <img src="27.0/Theme/Preload/Tips/new_features/camera.png" alt="Screenshot" class="app-icon">
+                    <h3 data-i18n="apps.a6.title">截图工具</h3>
+                    <p data-i18n="apps.a6.desc">快速捕捉屏幕内容</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 系统截图 -->
+    <section class="gallery" id="gallery">
+        <div class="container">
+            <h2 class="section-title" data-i18n="gallery.title">精致体验，一览无余</h2>
+            <p class="section-subtitle" data-i18n="gallery.subtitle">每一帧都是精心设计的视觉盛宴</p>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="27.0/Theme/Preload/Tips/new_features/design.png" alt="NyouOS 截图 1">
+                </div>
+                <div class="gallery-item">
+                    <img src="27.0/Theme/Preload/Tips/new_features/productivity.png" alt="NyouOS 截图 2">
+                </div>
+                <div class="gallery-item">
+                    <img src="27.0/Theme/Preload/Tips/new_features/widgets.png" alt="NyouOS 截图 3">
+                </div>
+                <div class="gallery-item">
+                    <img src="27.0/Theme/Preload/Tips/new_features/music.png" alt="NyouOS 截图 4">
+                </div>
+                <div class="gallery-item">
+                    <img src="27.0/Theme/Preload/Tips/new_features/weather.png" alt="NyouOS 截图 5">
+                </div>
+                <div class="gallery-item">
+                    <img src="27.0/Theme/Preload/Tips/new_features/notes_example.png" alt="NyouOS 截图 6">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 对比其他系统 -->
+    <section class="compare" id="compare">
+        <div class="container">
+            <h2 class="section-title" data-i18n="compare.title">NyouOS vs FydeOS</h2>
+            <p class="section-subtitle" data-i18n="compare.subtitle">看看 NyouOS 有什么不同</p>
+            <div class="compare-table">
+                <div class="compare-row compare-header">
+                    <div class="compare-cell compare-feature" data-i18n="compare.feature">特性</div>
+                    <div class="compare-cell compare-nyouos">NyouOS</div>
+                    <div class="compare-cell compare-other">FydeOS</div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-cell compare-feature" data-i18n="compare.r1.f">运行环境</div>
+                    <div class="compare-cell compare-nyouos" data-i18n="compare.r1.n">纯浏览器运行</div>
+                    <div class="compare-cell compare-other" data-i18n="compare.r1.o">需要安装系统</div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-cell compare-feature" data-i18n="compare.r2.f">启动时间</div>
+                    <div class="compare-cell compare-nyouos" data-i18n="compare.r2.n">约 3 秒</div>
+                    <div class="compare-cell compare-other" data-i18n="compare.r2.o">约 30 秒</div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-cell compare-feature" data-i18n="compare.r3.f">存储空间</div>
+                    <div class="compare-cell compare-nyouos" data-i18n="compare.r3.n">0 MB（无需安装）</div>
+                    <div class="compare-cell compare-other" data-i18n="compare.r3.o">约 10 GB</div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-cell compare-feature" data-i18n="compare.r4.f">设计风格</div>
+                    <div class="compare-cell compare-nyouos" data-i18n="compare.r4.n">Fluent Design</div>
+                    <div class="compare-cell compare-other" data-i18n="compare.r4.o">Material Design</div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-cell compare-feature" data-i18n="compare.r5.f">AI 助手</div>
+                    <div class="compare-cell compare-nyouos" data-i18n="compare.r5.n">内置 Surf AI</div>
+                    <div class="compare-cell compare-other" data-i18n="compare.r5.o">需额外配置</div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-cell compare-feature" data-i18n="compare.r6.f">跨平台</div>
+                    <div class="compare-cell compare-nyouos" data-i18n="compare.r6.n">所有支持浏览器的设备</div>
+                    <div class="compare-cell compare-other" data-i18n="compare.r6.o">x86/ARM 设备</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="cta-bg"></div>
+        <div class="container">
+            <h2 data-i18n="cta.title">准备好开始了吗？</h2>
+            <p data-i18n="cta.subtitle">打开浏览器，即刻体验 NyouOS 带来的全新感受</p>
+            <a href="27.0/index.html" class="btn-cta" data-i18n="cta.btn">立即前往 NyouOS</a>
+        </div>
+    </section>
+
+    <!-- 找到我们 -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title" data-i18n="contact.title">找到我们</h2>
+            <p class="section-subtitle" data-i18n="contact.subtitle">关注我们的社交媒体，获取最新动态</p>
+            <div class="contact-links">
+                <a href="https://space.bilibili.com/3546832275769548" target="_blank" class="contact-link">
+                    <div class="contact-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/></svg>
+                    </div>
+                    <div class="contact-info">
+                        <h3>Bilibili</h3>
+                        <p>@NyouOS</p>
+                    </div>
+                    <svg class="contact-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="27.0/Theme/Icon/Nyou_logo.png" alt="NyouOS">
+                        <span>NyouOS</span>
+                    </div>
+                    <p data-i18n="footer.desc">重新定义 Web 操作系统的边界</p>
+                </div>
+                <div class="footer-links">
+                    <h4 data-i18n="footer.product">产品</h4>
+                    <a href="27.0/index.html" data-i18n="footer.p1">体验 NyouOS</a>
+                    <a href="#features" data-i18n="footer.p2">功能特性</a>
+                    <a href="#gallery" data-i18n="footer.p3">截图展示</a>
+                </div>
+                <div class="footer-links">
+                    <h4 data-i18n="footer.resources">资源</h4>
+                    <a href="#about" data-i18n="footer.r1">关于我们</a>
+                    <a href="#compare" data-i18n="footer.r2">系统对比</a>
+                    <a href="https://space.bilibili.com/3546832275769548" target="_blank" data-i18n="footer.r3">Bilibili</a>
+                </div>
+                <div class="footer-links">
+                    <h4 data-i18n="footer.tech">技术</h4>
+                    <a href="https://supabase.com/" target="_blank">Supabase</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>2025-2026 KevinAnanda. | 2026 NyouOS Studio</p>
+                <p class="footer-note">由 Supabase 提供云端支持 | NyouOS On Web | 此作品不开源</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+<!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b4cb571103f243cb9c3d49d0ac3d08cc"}'></script><!-- Cloudflare Pages Analytics --></body>
+</html>
